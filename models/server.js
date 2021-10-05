@@ -42,7 +42,7 @@ class Server {
     }
 
     enableCors() {
-        this.app(cors());
+        this.app.use(cors());
     }
 }
 
