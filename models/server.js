@@ -34,7 +34,7 @@ class Server {
 
     middlewares() {
         this.app.use(express.static(path.resolve(__dirname, '../public')));
-        enableCors()
+        this.enableCors()
     }
 
     socketEvents() {
