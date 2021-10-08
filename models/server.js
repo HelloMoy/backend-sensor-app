@@ -29,7 +29,7 @@ class Server {
     execute() {
         this.middlewares();
         this.socketEvents();
-        this.server.listen(this.port, () => (console.log('Server running on port: 8080!')));
+        this.server.listen(this.port, () => (console.log('Server running on port:', process.env.PORT)));
     }
 
     middlewares() {
