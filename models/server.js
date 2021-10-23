@@ -16,14 +16,19 @@ class Server {
         this.io;
     }
 
-    initServerWithExpress(){
+    initServerWithExpress() {
         this.app = express();
         this.port = process.env.PORT;
         this.server = http.createServer(this.app);
     }
 
-    initSocketServer(){
-        this.io = socketio(this.server, {/*config*/ });
+    initSocketServer() {
+        this.io = socketio(this.server, {
+            cors: {
+                origin: "*",
+                methods: ["GET", "POST"]
+            }
+        });
     }
 
     execute() {
