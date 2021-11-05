@@ -12,6 +12,7 @@ class Sockets {
 
             socket.on('rgb_led_values', (payload) => {
                 console.log(payload);
+                this.io.emit('rgb_values', payload);
             });
 
             socket.on('hey-backend', (payload, callback) => {
