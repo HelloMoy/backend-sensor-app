@@ -10,6 +10,10 @@ class Sockets {
         this.io.on('connection', (socket) => {
             console.log('Client conected')
 
+            socket.on('rgb_led_values', (payload) => {
+                console.log(payload);
+            });
+
             socket.on('hey-backend', (payload, callback) => {
                 console.log(payload)
                 if (payload.callbackToExecute) {
@@ -18,7 +22,7 @@ class Sockets {
                 }
 
                 socket.emit('hey-frontend', { ...payload, 'backendResponse': 'Hi Front!' });
-            })
+            });
 
             socket.on("disconnect", () => {
                 let numberOfClientsConnected =  this.getNumberOfClientsConnected()
