@@ -4,6 +4,9 @@ class Sockets {
         this.socketEvents();
         this.sendingDataByIntervalsIdentifier;
         this.isSendingDataByIntervals = false;
+        this.colorValues = {};
+        this.colorValuesPackages = { red: [0, 0, 0, 0, 0, 0], green: [0, 0, 0, 0, 0, 0], blue: [0, 0, 0, 0, 0, 0] };
+        this.numberOfElementsPerPackage = 6;
     }
 
     socketEvents() {
@@ -11,8 +14,10 @@ class Sockets {
             console.log('Client conected')
 
             socket.on('rgb_led_values', (payload) => {
+                this.generateColorsValuesPackages(payload.rgbValues)
+                this.colorValues = { lastRgbColorValue: payload.rgbValues, rgbColorsValuesPackages: this.colorValuesPackages };
                 console.log(payload);
-                this.io.emit('rgb_values', payload);
+                this.io.emit('rgb_values', this.colorValues);
             });
 
             socket.on('hey-backend', (payload, callback) => {
@@ -26,8 +31,8 @@ class Sockets {
             });
 
             socket.on("disconnect", () => {
-                let numberOfClientsConnected =  this.getNumberOfClientsConnected()
-                if(numberOfClientsConnected <= 0){
+                let numberOfClientsConnected = this.getNumberOfClientsConnected()
+                if (numberOfClientsConnected <= 0) {
                     this.stopSendingDataByIntervas();
                 }
             });
@@ -63,8 +68,41 @@ class Sockets {
         return Math.floor(Math.random() * (100 - 1)) + 1;
     }
 
-    getNumberOfClientsConnected(){
+    getNumberOfClientsConnected() {
         return this.io.engine.clientsCount;
+    }
+
+
+    generateColorsValuesPackages(rgbValues) {
+
+        const deleteFirstColorValue = (listValues) => {
+            listValues.splice(0, 1);
+            return listValues;
+        }
+
+        const deleteFirstElementIfItHasMoreThanTheCondition = (listValues, numberOfElementsPerPackage) => {
+            if (listValues.length > numberOfElementsPerPackage) {
+                listValues = deleteFirstColorValue(listValues);
+            }
+            return listValues;
+        }
+
+        const lastColorValue = (listValues) => {
+            return listValues[listValues.length - 1];
+        }
+
+        const areDifferent = (lastColorValue, currentColorValue) => (lastColorValue !== currentColorValue && (currentColorValue > (lastColorValue + 15) || currentColorValue < (lastColorValue - 15)));
+
+        const generateIndividualColorValuePackage = (rgbValue, rgbValues) => {
+            if (areDifferent(lastColorValue(this.colorValuesPackages[rgbValue]), rgbValues[rgbValue])) {
+                this.colorValuesPackages[rgbValue].push(rgbValues[rgbValue]);
+                this.colorValuesPackages[rgbValue] = deleteFirstElementIfItHasMoreThanTheCondition(this.colorValuesPackages[rgbValue], this.numberOfElementsPerPackage);
+            }
+        }
+
+        for (var rgbValue in rgbValues) {
+            generateIndividualColorValuePackage(rgbValue, rgbValues);
+        }
     }
 }
 
