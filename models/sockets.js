@@ -13,11 +13,15 @@ class Sockets {
         this.io.on('connection', (socket) => {
             console.log('Client conected')
 
-            socket.on('rgb_led_values', (payload) => {
+            socket.on('values', (payload) => {
                 this.generateColorsValuesPackages(payload.rgbValues)
-                this.colorValues = { lastRgbColorValue: payload.rgbValues, rgbColorsValuesPackages: this.colorValuesPackages };
+                this.colorValues = {
+                    lastRgbColorValue: payload.rgbValues,
+                    rgbColorsValuesPackages: this.colorValuesPackages,
+                    temperatureAndHumidityValues: payload.temperatureAndHumidityValues
+                };
                 console.log(payload);
-                this.io.emit('rgb_values', this.colorValues);
+                this.io.emit('values', this.colorValues);
             });
 
             socket.on('hey-backend', (payload, callback) => {
