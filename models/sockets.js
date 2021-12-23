@@ -53,13 +53,16 @@ class Sockets {
     }
 
     sendingDataByIntervals() {
-        this.io.emit('hey-frontend', {
-            'Red': this.getRandomInt(),
-            'Blue': this.getRandomInt(),
-            'Yellow': this.getRandomInt(),
-            'Green': this.getRandomInt(),
-            'Purple': this.getRandomInt(),
-            'Orange': this.getRandomInt()
+        this.io.emit('random-data', {
+            'rgbColorsValuesPackages': {
+                'red': this.getRandomInt(255),
+                'green': this.getRandomInt(255),
+                'blue': this.getRandomInt(255)
+            },
+            'temperatureAndHumidityValues': {
+                'temperature': this.getRandomInt(30),
+                'humidity': this.getRandomInt(50)
+            }
         });
     }
 
@@ -68,8 +71,8 @@ class Sockets {
         clearInterval(this.sendingDataByIntervalsIdentifier);
     }
 
-    getRandomInt() {
-        return Math.floor(Math.random() * (100 - 1)) + 1;
+    getRandomInt(maxValue) {
+        return Math.floor((Math.random() * (maxValue - 1)) + 1);
     }
 
     getNumberOfClientsConnected() {
